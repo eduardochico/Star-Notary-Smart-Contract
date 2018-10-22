@@ -1,1 +1,0 @@
-# Star-Notary-Smart-Contract
