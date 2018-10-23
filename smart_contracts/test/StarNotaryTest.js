@@ -74,5 +74,56 @@ contract('StarNotary', accounts => {
         })
     })
 
+
+
+    describe('check if star exists', () => { 
+        it('check if star exists after creation', async function () { 
+            
+            await this.contract.createStar('awesome star 2!', "story", "dec_10.15", "mag_23.25", "ra_12.23", 3, {from: accounts[0]})
+            assert.equal(await this.contract.checkIfStarExist("dec_10.15", "mag_23.25", "ra_12.23"), true);
+        })
+    })
+
+
+
+    describe('can grant approval to transfer', () => { 
+        let tokenId = 1
+        let tx 
+
+        beforeEach(async function () { 
+            await this.contract.mint(accounts[0], tokenId, {from: accounts[0]})
+            tx = await this.contract.approve(accounts[1], tokenId, {from: accounts[0]})
+        })
+
+        it('set user2 as an approved address', async function () { 
+            assert.equal(await this.contract.getApproved(tokenId), accounts[1])
+        })
+
+        it('user2 can now transfer', async function () { 
+            await this.contract.transferFrom(accounts[0], accounts[1], tokenId, {from: accounts[1]})
+
+            assert.equal(await this.contract.ownerOf(tokenId), accounts[1])
+        })
+
+        it('emits the correct event', async function () { 
+            assert.equal(tx.logs[0].event, 'Approval')
+        })
+    })
+
+    describe('can set an operator', () => { 
+        let tokenId = 1
+        let tx 
+
+        beforeEach(async function () { 
+            await this.contract.mint(accounts[0], tokenId, {from: accounts[0]})
+
+            tx = await this.contract.setApprovalForAll(accounts[2], true, {from: accounts[0]})
+        })
+
+        it('can set an operator', async function () { 
+            assert.equal(await this.contract.isApprovedForAll(accounts[0], accounts[2]), true)
+        })
+    })
+
     
 })
