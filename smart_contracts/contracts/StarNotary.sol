@@ -1,11 +1,9 @@
 pragma solidity ^0.4.23;
 
 import 'openzeppelin-solidity/contracts/token/ERC721/ERC721.sol';
-//import "github.com/Arachnid/solidity-stringutils/strings.sol";
 
 
 contract StarNotary is ERC721 { 
-    //using strings for *;
 
     struct Star { 
         string name; 
@@ -43,12 +41,6 @@ contract StarNotary is ERC721 {
         _mint(_to, _tokenId);
     }
 
-/*    function tokenIdToStarInfo(uint256 _tokenId) public returns (struct) {
-        Star memory currentStar = tokenIdToStarInfoMapping[_tokenId];
-
-        return currentStar;
-
-    }*/
 
 
     function putStarUpForSale(uint256 _tokenId, uint256 _price) public { 
