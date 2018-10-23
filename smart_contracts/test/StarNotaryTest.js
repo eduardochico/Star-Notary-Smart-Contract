@@ -9,9 +9,14 @@ contract('StarNotary', accounts => {
     describe('can create a star', () => { 
         it('can create a star and get its name', async function () { 
             
-            await this.contract.createStar('awesome star!', 1, {from: accounts[0]})
-
-            assert.equal(await this.contract.tokenIdToStarInfo(1), 'awesome star!')
+            await this.contract.createStar('awesome star!', "story", "dec_10.25", "mag_23.25", "ra_12.23", 1, {from: accounts[0]})
+            console.log(await this.contract.tokenIdToStarInfo(1));
+            let starObj = await this.contract.tokenIdToStarInfo(1); 
+            assert.equal(starObj[0], 'awesome star!')
+            assert.equal(starObj[1], 'story')
+            assert.equal(starObj[2], 'dec_10.25')
+            assert.equal(starObj[3], 'mag_23.25')
+            assert.equal(starObj[4], 'ra_12.23')
         })
     })
 
@@ -24,7 +29,7 @@ contract('StarNotary', accounts => {
         let starPrice = web3.toWei(.01, "ether")
 
         beforeEach(async function () { 
-            await this.contract.createStar('awesome star!', starId, {from: user1})    
+            await this.contract.createStar('awesome star!', "story", "dec_10.25", "mag_23.25", "ra_12.23", starId, {from: user1})    
         })
 
         it('user1 can put up their star for sale', async function () { 
@@ -54,4 +59,20 @@ contract('StarNotary', accounts => {
             })
         })
     })
+
+    describe('star is unique', () => { 
+        it('returns an error if try to create 2 stars with the same arguments', async function () { 
+            
+            await this.contract.createStar('awesome star!', "story", "dec_10.25", "mag_23.25", "ra_12.23", 1, {from: accounts[0]})
+            try {
+                await this.contract.createStar('awesome star2!', "story", "dec_10.25", "mag_23.25", "ra_12.23", 2, {from: accounts[1]})
+            } catch(error) {
+                console.log("Expected error thrown");
+                return;
+            }
+            assert.fail("Expected error not thrown");
+        })
+    })
+
+    
 })

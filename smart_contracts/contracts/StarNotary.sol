@@ -10,37 +10,31 @@ contract StarNotary is ERC721 {
     struct Star { 
         string name; 
         string story;
-        uint dec;
-        uint mag;
-        uint cent;
+        string dec;
+        string mag;
+        string cent;
     }
 
 
-    mapping(uint256 => Star) public tokenIdToStarInfoMapping; 
+    mapping(uint256 => Star) public tokenIdToStarInfo; 
     mapping(uint256 => uint256) public starsForSale;
     mapping(bytes32 => uint256) public starCoordsOwnership;
 
-    function createStar(string _name, string _story, uint _dec, uint _mag, uint _cent, uint256 _tokenId) public { 
+    function createStar(string _name, string _story, string _dec, string _mag, string _cent, uint256 _tokenId) public { 
         
-        require(_dec > 0);
-        require(_mag > 0);
-        require(_cent > 0);
-
-        if(checkIfStarExist(_dec, _mag, _cent)) {
-            //TODO log sth
-            return;
-        }
+       
+        require(checkIfStarExist(_dec, _mag, _cent) == false);
 
 
         Star memory newStar = Star(_name, _story, _dec, _mag, _cent);
 
         
 
-        bytes32 memory coordsHash = keccak256(_dec, _mag, _cent);
+        bytes32 coordsHash = keccak256(abi.encode(_dec, _mag, _cent));
 
         starCoordsOwnership[coordsHash] = _tokenId;
 
-        tokenIdToStarInfoMapping[coordsHash] = _tokenId;
+        tokenIdToStarInfo[_tokenId] = newStar;
 
         mint(msg.sender, _tokenId);
     }
@@ -49,12 +43,12 @@ contract StarNotary is ERC721 {
         _mint(_to, _tokenId);
     }
 
-    function tokenIdToStarInfo(uint256 _tokenId) public returns (struct) {
+/*    function tokenIdToStarInfo(uint256 _tokenId) public returns (struct) {
         Star memory currentStar = tokenIdToStarInfoMapping[_tokenId];
 
         return currentStar;
 
-    }
+    }*/
 
 
     function putStarUpForSale(uint256 _tokenId, uint256 _price) public { 
@@ -80,8 +74,8 @@ contract StarNotary is ERC721 {
         }
     }
 
-    function checkIfStarExist(uint _dec, uint _mag, uint _cent) public returns (bool) {
-        bytes32 memory coordsHash = keccak256(_dec, _mag, _cent);
+    function checkIfStarExist(string _dec, string _mag, string _cent) public view returns (bool) {
+        bytes32 coordsHash = keccak256(abi.encode(_dec, _mag, _cent));
         if(starCoordsOwnership[coordsHash] > 0) {
             return true;
         } else {
