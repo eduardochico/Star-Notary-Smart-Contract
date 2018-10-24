@@ -10,7 +10,7 @@ contract('StarNotary', accounts => {
         it('can create a star and get its name', async function () { 
             
             await this.contract.createStar('awesome star!', "story", "dec_10.25", "mag_23.25", "ra_12.23", 1, {from: accounts[0]})
-            console.log(await this.contract.tokenIdToStarInfo(1));
+            //console.log(await this.contract.tokenIdToStarInfo(1));
             let starObj = await this.contract.tokenIdToStarInfo(1); 
             assert.equal(starObj[0], 'awesome star!')
             assert.equal(starObj[1], 'story')
